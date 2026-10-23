@@ -1,0 +1,251 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: 'Space Grotesk', 'Inter', ui-sans-serif, system-ui, sans-serif;
+
+  --color-ink: #f4f3f8;
+  --color-ink-2: #b9b7c6;
+  --color-ink-3: #7d7a8c;
+  --color-base: #07070b;
+  --color-surface: #101016;
+  --color-surface-2: #17171f;
+  --color-surface-3: #20202a;
+  --color-line: rgb(255 255 255 / 0.08);
+  --color-brand: #ff3d6e;
+  --color-brand-2: #7c5cff;
+}
+
+@keyframes eq {
+  0%,
+  100% {
+    transform: scaleY(0.25);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes shimmer {
+  from {
+    background-position: -400px 0;
+  }
+  to {
+    background-position: 400px 0;
+  }
+}
+
+:root {
+  /* Updated at runtime from the current track's artwork. */
+  --accent: #ff4f7b;
+  --tint-1: #ff3d6e;
+  --tint-2: #7c5cff;
+  --tint-deep: #0d0a14;
+  --player-h: 88px;
+  /* Desktop app transparency (0 = opaque); set from settings at runtime. */
+  --see: 0;
+  color-scheme: dark;
+  transition:
+    --accent 0.8s ease,
+    --tint-1 0.8s ease;
+}
+
+@property --accent {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #ff4f7b;
+}
+@property --tint-1 {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #ff3d6e;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-base);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+/* Desktop app: the window itself is glass, so the page must not paint over it. */
+html.desktop,
+html.desktop body {
+  background: transparent;
+}
+
+/* Frameless window: drag by the chrome, but keep controls clickable. */
+.app-drag {
+  app-region: drag;
+  -webkit-app-region: drag;
+}
+.app-drag
+  :is(
+    button,
+    a,
+    input,
+    select,
+    textarea,
+    form,
+    kbd,
+    label,
+    [role='button'],
+    [role='link'],
+    [role='slider'],
+    [role='listbox'],
+    [role='option'],
+    [role='menu'],
+    [role='dialog'],
+    .no-drag
+  ) {
+  app-region: no-drag;
+  -webkit-app-region: no-drag;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--accent) 45%, transparent);
+}
+
+/* Thin, unobtrusive scrollbars. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(255 255 255 / 0.16) transparent;
+}
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-thumb {
+  background: rgb(255 255 255 / 0.14);
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(255 255 255 / 0.26);
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--accent) 80%, white);
+  outline-offset: 2px;
+}
+
+button {
+  cursor: pointer;
+}
+
+/*
+ * Glass system.
+ *  - glass-panel: large translucent sheets that sit directly on the (already
+ *    blurred) ambient backdrop — no backdrop-filter needed, so they're cheap.
+ *  - glass: floating chrome over sharp, scrolling content — real frosted blur.
+ *  - glass-strong: menus/dialogs that need extra opacity for legibility.
+ * Every surface gets a hairline border plus an inner top highlight, which is
+ * what makes translucent layers read as glass rather than plain transparency.
+ */
+@utility glass-panel {
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.065) 0%, rgb(255 255 255 / 0.025) 100%);
+  border: 1px solid rgb(255 255 255 / 0.075);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.09),
+    inset 0 0 0 1px rgb(255 255 255 / 0.015),
+    0 30px 80px -40px rgb(0 0 0 / 0.75);
+}
+
+@utility glass {
+  /* Thins out with the desktop Transparency setting (--see is 0 in the browser). */
+  background: linear-gradient(
+    180deg,
+    rgb(28 27 38 / calc(0.62 - var(--see) * 0.42)) 0%,
+    rgb(16 15 22 / calc(0.56 - var(--see) * 0.4)) 100%
+  );
+  border: 1px solid rgb(255 255 255 / 0.09);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.12),
+    0 24px 60px -24px rgb(0 0 0 / 0.7);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+}
+
+@utility glass-strong {
+  background: linear-gradient(180deg, rgb(34 33 46 / 0.86) 0%, rgb(20 19 28 / 0.82) 100%);
+  border: 1px solid rgb(255 255 255 / 0.1);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.12),
+    0 30px 70px -20px rgb(0 0 0 / 0.85);
+  backdrop-filter: blur(36px) saturate(190%);
+  -webkit-backdrop-filter: blur(36px) saturate(190%);
+}
+
+/* Light glass chip/button used for secondary actions on glass. */
+@utility glass-chip {
+  background: rgb(255 255 255 / 0.08);
+  border: 1px solid rgb(255 255 255 / 0.08);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.1);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+}
+
+@keyframes ambient-drift {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+  }
+  33% {
+    transform: translate3d(4%, -3%, 0) rotate(8deg) scale(1.08);
+  }
+  66% {
+    transform: translate3d(-3%, 4%, 0) rotate(-6deg) scale(1.04);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+  }
+}
+
+.ambient-drift {
+  animation: ambient-drift 48s ease-in-out infinite;
+}
+
+@utility text-accent {
+  color: var(--accent);
+}
+
+@utility bg-accent {
+  background-color: var(--accent);
+}
+
+@utility skeleton {
+  background: linear-gradient(90deg, rgb(255 255 255 / 0.04) 0%, rgb(255 255 255 / 0.09) 50%, rgb(255 255 255 / 0.04) 100%);
+  background-size: 800px 100%;
+  animation: shimmer 1.6s linear infinite;
+}
+
+@utility mask-fade-x {
+  mask-image: linear-gradient(to right, transparent, black 24px, black calc(100% - 24px), transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}
