@@ -276,8 +276,14 @@ function GlassSettings() {
   );
 }
 
-const SETTINGS: { key: ToggleKey; label: string; hint: string }[] = [
+const SETTINGS: { key: ToggleKey; label: string; hint: string; desktopOnly?: true }[] = [
   { key: 'autoplay', label: 'Autoplay', hint: 'Keep playing similar music when the queue ends' },
+  {
+    key: 'appBehindNowPlaying',
+    label: 'App behind Now playing',
+    hint: 'See Home through Now playing instead of just your desktop',
+    desktopOnly: true,
+  },
   { key: 'motionBackgrounds', label: 'Animated backgrounds', hint: 'WebGL effects on Home and Now playing' },
   { key: 'sparks', label: 'Click sparks', hint: 'Little bursts when you click' },
   { key: 'grain', label: 'Film grain', hint: 'Subtle texture over the UI' },
@@ -322,7 +328,7 @@ function SettingsMenu() {
           >
             <GlassSettings />
             <p className="px-3 pt-2 pb-1 text-xs font-semibold tracking-[0.14em] text-ink-3 uppercase">Settings</p>
-            {SETTINGS.map((s) => (
+            {SETTINGS.filter((s) => isDesktop || !s.desktopOnly).map((s) => (
               <label key={s.key} className="flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 hover:bg-white/[0.05]">
                 <span className="min-w-0 flex-1">
                   <span className="block text-sm font-medium">{s.label}</span>

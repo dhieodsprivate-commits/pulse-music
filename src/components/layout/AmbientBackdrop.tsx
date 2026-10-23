@@ -50,6 +50,7 @@ export function AmbientBackdrop() {
   const scene = useUI((s) => s.scene);
   const nowPlaying = useUI((s) => s.nowPlaying);
   const motionOn = useLibrary((s) => s.settings.motionBackgrounds);
+  const appBehind = useLibrary((s) => s.settings.appBehindNowPlaying);
 
   const { key, colors, art, artStrength } = useMemo(() => {
     if (scene) return { key: `page:${scene.key}:${scene.colors.join()}`, colors: scene.colors, art: scene.art, artStrength: 0.7 };
@@ -64,8 +65,9 @@ export function AmbientBackdrop() {
   return (
     <div
       className={`pointer-events-none fixed inset-0 -z-10 overflow-hidden transition-opacity duration-300 ${
-        // Now Playing paints its own background; stacking both would make it opaque.
-        nowPlaying && isDesktop ? 'opacity-0' : 'opacity-100'
+        // Now Playing paints its own background; stacking both would make it opaque
+        // (unless the app is meant to show through it).
+        nowPlaying && isDesktop && !appBehind ? 'opacity-0' : 'opacity-100'
       }`}
       aria-hidden="true"
     >

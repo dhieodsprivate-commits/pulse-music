@@ -33,6 +33,8 @@ export interface Settings {
   glass: 'acrylic' | 'mica' | 'solid';
   /** Desktop app only: 0 = opaque UI, 1 = maximum see-through. */
   transparency: number;
+  /** Desktop app only: keep the app visible through Now Playing instead of just the desktop. */
+  appBehindNowPlaying: boolean;
 }
 
 interface LibraryState {
@@ -92,7 +94,7 @@ export const useLibrary = create<LibraryState>()(
       pins: [],
       searches: [],
       listenedSeconds: 0,
-      settings: { autoplay: true, videoMode: false, motionBackgrounds: true, sparks: true, grain: true, glass: 'acrylic', transparency: 0.55 },
+      settings: { autoplay: true, videoMode: false, motionBackgrounds: true, sparks: true, grain: true, glass: 'acrylic', transparency: 0.55, appBehindNowPlaying: false },
 
       isLiked: (id) => get().likes.some((t) => t.id === id),
       toggleLike: (t) => {

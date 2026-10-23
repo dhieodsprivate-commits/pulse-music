@@ -10,6 +10,7 @@ import { AccountDialog } from './components/overlays/AccountDialog';
 import { useLibrary } from './store/library';
 import { useUI } from './store/ui';
 import { mainScrollRef } from './lib/scroll';
+import { isDesktop } from './lib/desktop';
 import { Sidebar, MobileNav } from './components/layout/Sidebar';
 import { TopBar } from './components/layout/TopBar';
 import { PlayerBar, MiniPlayer } from './components/player/PlayerBar';
@@ -47,6 +48,8 @@ export default function App() {
   const settings = useLibrary((s) => s.settings);
   const accent = useUI((s) => s.palette.accent);
   const nowPlayingOpen = useUI((s) => s.nowPlaying);
+  // By default the app hides behind Now Playing so its glass only shows the desktop.
+  const appBehind = nowPlayingOpen && isDesktop && settings.appBehindNowPlaying;
 
   useDynamicTheme();
   useDesktopGlass();
@@ -109,10 +112,13 @@ export default function App() {
       className="h-full"
     >
       <AmbientBackdrop />
-      {/* Fully hidden behind Now Playing so its glass only ever shows the desktop, not the app. */}
       <div
         className={`flex h-dvh flex-col transition-[opacity,visibility,transform] duration-300 lg:gap-2 lg:p-2 ${
-          nowPlayingOpen ? 'invisible scale-[0.98] opacity-0' : 'visible scale-100 opacity-100'
+          appBehind
+            ? 'pointer-events-none visible scale-100 opacity-100'
+            : nowPlayingOpen
+              ? 'invisible scale-[0.98] opacity-0'
+              : 'visible scale-100 opacity-100'
         }`}
         aria-hidden={nowPlayingOpen || undefined}
       >
